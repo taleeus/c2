@@ -7,8 +7,4 @@ project "c2"
     language "C"
     targetdir "bin/%{cfg.buildcfg}"
 
-    files {
-        "src/**",
-    }
-
-    includedirs { "include" }
+    files { "src/**" }
