@@ -1,0 +1,17 @@
+# Editors
+## Zed
+.zed
+
+# Premake
+## Build artifacts
+bin/
+obj/
+
+## Build scripts
+### Make
+Makefile
+**.make
+
+# Clang
+compile_commands.json
+.cache/

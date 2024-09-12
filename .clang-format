@@ -1,0 +1,15 @@
+---
+Language:                           C
+BasedOnStyle:                       Google
+AlignAfterOpenBracket:              AlwaysBreak
+PointerAlignment:                   Left
+IndentCaseLabels:                   false
+IndentWidth:                        4
+AccessModifierOffset:               -4
+AllowShortFunctionsOnASingleLine:   Empty
+AllowShortLambdasOnASingleLine:     Empty
+AllowShortBlocksOnASingleLine:      Empty
+SeparateDefinitionBlocks:           Always
+Standard:                           Latest
+
+...
