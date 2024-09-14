@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #pragma once
 
 // Basics
@@ -6,6 +8,8 @@
 typedef enum { false, true } bool;
 
 // Numeric types
+
+#define size size_t
 
 #define i8 signed char
 #define u8 unsigned char
@@ -21,3 +25,7 @@ typedef enum { false, true } bool;
 
 #define f32 float
 #define f64 double
+
+// Errors
+
+#define error i32
