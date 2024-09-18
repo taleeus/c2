@@ -1,1 +1,0 @@
-#define CAP_DEFAULT 10

@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include "errors.h"
 
 #pragma once
 
@@ -9,7 +9,8 @@ typedef enum { false, true } bool;
 
 // Numeric types
 
-#define size size_t
+#define isize size_t
+#define itime time_t
 
 #define i8 signed char
 #define u8 unsigned char

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <stdio.h>
-
 /** @brief Indicates if warning level logging is enabled. */
 #define LOG_WARN_ENABLED 1
 /** @brief Indicates if info level logging is enabled. */
