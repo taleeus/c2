@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../base.h"
 
 #include <stdlib.h>
@@ -84,4 +86,4 @@
     return nil;                                                                \
   }
 
-DECL_ALIST(_test_alist, int)
+DECL_ALIST(alist_check, int)

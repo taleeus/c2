@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../base.h"
 
 #include <stdlib.h>
@@ -93,4 +95,4 @@
     return nil;                                                                \
   }
 
-DECL_ATREE(_test_atree, int)
+DECL_ATREE(atree_check, int)

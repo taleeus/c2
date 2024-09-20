@@ -1,6 +1,3 @@
-project := "c2"
-executable := "bin" / "Debug" / project
-
 default: build
 
 rebuild:
@@ -8,3 +5,10 @@ rebuild:
 
 build:
     @make
+
+build-release:
+    @make release
+
+test:
+    @make config=test
+    @bin/Test/test/c2-test

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../base.h"
 
 #include <stdlib.h>
@@ -157,4 +159,4 @@ typedef char emap_key[EMAP_KEY_SIZE];
     return nil;                                                                \
   }
 
-DECL_EMAP(_test_emap, int)
+DECL_EMAP(emap_check, int)
