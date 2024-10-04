@@ -1,4 +1,4 @@
-#ifndef RELEASE
+#ifndef CRELEASE
 
 #pragma once
 
@@ -15,10 +15,7 @@ bool TEST_FAILED = false;
 TestEMap test_map = {0};
 
 void test_add(emap_key name, test_fn test) {
-  if (!TestEMap_is_initialized(test_map)) {
-    TestEMap_init(&test_map);
-  }
-
+  TestEMap_init(&test_map);
   TestEMap_append(&test_map, name, test);
 }
 
@@ -44,32 +41,26 @@ i32 test_run() {
   return failed;
 }
 
-#define ASSERT(condition, message)                                             \
+#define test(condition, message)                                               \
   if (!condition) {                                                            \
     ERROR(message);                                                            \
     TEST_FAILED = true;                                                        \
   }
 
-#define CHECK(err, message)                                                    \
-  if (err) {                                                                   \
-    ERROR("%s (error: %d)", message, err);                                     \
-    TEST_FAILED = true;                                                        \
-  }
-
-#define ASSERT_FATAL(condition, message)                                       \
+#undef assert
+#define assert(condition, message)                                             \
   if (!condition) {                                                            \
     FATAL(message);                                                            \
     TEST_FAILED = true;                                                        \
                                                                                \
-    return;                                                                    \
+    exit(1);                                                                   \
   }
 
-#define CHECK_FATAL(err, message)                                              \
-  if (err) {                                                                   \
-    FATAL("%s (error: %d)", message, err);                                     \
+#undef check
+#define check(condition, err)                                                  \
+  if (!condition) {                                                            \
     TEST_FAILED = true;                                                        \
-                                                                               \
-    return;                                                                    \
+    return err;                                                                \
   }
 
 #endif

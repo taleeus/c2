@@ -3,15 +3,15 @@ workspace "c2"
     configurations { "Debug", "Release", "Test" }
 
     filter "configurations:Test"
-        defines { "DEBUG", "TEST" }
-        flags { "Symbols" }
+        defines { "CDEBUG", "CTEST" }
+        symbols "On"
 
     filter "configurations:Debug"
-        defines { "DEBUG" }
-        flags { "Symbols" }
+        defines { "CDEBUG" }
+        symbols "On"
 
     filter "configurations:Release"
-        defines { "RELEASE" }
+        defines { "CRELEASE" }
         optimize "On"
 
 project "c2"

@@ -24,14 +24,10 @@
     return false;                                                              \
   }                                                                            \
                                                                                \
-  error typename##_init(typename *tree, type value) {                          \
-    if (!tree) {                                                               \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (typename##_is_initialized(*tree)) {                                    \
-      return nil;                                                              \
-    }                                                                          \
+  void typename##_init(typename *tree, type value) {                           \
+    assert(!tree, "tree is nil");                                              \
+    if (typename##_is_initialized(*tree))                                      \
+      return;                                                                  \
                                                                                \
     tree->len = 0;                                                             \
     if (tree->cap <= 0) {                                                      \
@@ -39,50 +35,32 @@
     }                                                                          \
                                                                                \
     tree->nodes = calloc(tree->cap, sizeof(typename));                         \
-    if (!tree->nodes) {                                                        \
-      return ERROR_CALLOC;                                                     \
-    }                                                                          \
+    assert(tree->nodes, "couldn't calloc tree nodes");                         \
                                                                                \
     tree->value = value;                                                       \
-    return nil;                                                                \
   }                                                                            \
                                                                                \
-  error typename##_deinit(typename *tree) {                                    \
-    if (!tree) {                                                               \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*tree)) {                                   \
-      return nil;                                                              \
-    }                                                                          \
+  void typename##_deinit(typename *tree) {                                     \
+    assert(tree, "tree is nil");                                               \
+    assert(typename##_is_initialized(*tree), "tree is not initialized");       \
                                                                                \
     for (isize i = 0; i < tree->len; i++) {                                    \
-      typename node = tree->nodes[i];                                          \
-      error err = typename##_deinit(&node);                                    \
-      if (err) {                                                               \
-        return err;                                                            \
-      }                                                                        \
+      typename##_deinit(&tree->nodes[i]);                                      \
     }                                                                          \
                                                                                \
     free(tree->nodes);                                                         \
-    return nil;                                                                \
   }                                                                            \
                                                                                \
-  error typename##_append(typename *tree, type value) {                        \
-    if (!tree) {                                                               \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*tree)) {                                   \
-      typename##_init(tree, tree->value);                                      \
-    }                                                                          \
+  void typename##_append(typename *tree, type value) {                         \
+    assert(tree, "tree is nil");                                               \
+    assert(typename##_is_initialized(*tree), "tree is not initialized");       \
                                                                                \
     if (tree->len == tree->cap) {                                              \
       tree->cap *= 2;                                                          \
                                                                                \
-      if (!realloc(tree->nodes, sizeof(typename) * (tree->cap))) {             \
-        return ERROR_REALLOC;                                                  \
-      }                                                                        \
+      void *ok = realloc(tree->nodes, sizeof(typename) * (tree->cap));         \
+      assert(ok, "couldn't realloc tree");                                     \
+                                                                               \
       memset(&tree->nodes[tree->len], nil, tree->cap - tree->len);             \
     }                                                                          \
                                                                                \
@@ -91,8 +69,6 @@
                                                                                \
     tree->nodes[tree->len] = node;                                             \
     tree->len++;                                                               \
-                                                                               \
-    return nil;                                                                \
   }
 
 DECL_ATREE(atree_check, int)

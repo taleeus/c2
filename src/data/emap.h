@@ -6,7 +6,6 @@
 #include <string.h>
 
 #include "__data.h"
-#include "_errors.h"
 
 #define EMAP_KEY_SIZE 32
 
@@ -28,14 +27,10 @@ typedef char emap_key[EMAP_KEY_SIZE];
     return false;                                                              \
   }                                                                            \
                                                                                \
-  error typename##_init(typename *map) {                                       \
-    if (!map) {                                                                \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (typename##_is_initialized(*map)) {                                     \
-      return nil;                                                              \
-    }                                                                          \
+  void typename##_init(typename *map) {                                        \
+    assert(map, "map is nil");                                                 \
+    if (typename##_is_initialized(*map))                                       \
+      return;                                                                  \
                                                                                \
     map->len = 0;                                                              \
     if (map->cap <= 0) {                                                       \
@@ -43,26 +38,15 @@ typedef char emap_key[EMAP_KEY_SIZE];
     }                                                                          \
                                                                                \
     map->keys = calloc(map->cap, sizeof(emap_key));                            \
-    if (!map->keys) {                                                          \
-      return ERROR_CALLOC;                                                     \
-    }                                                                          \
+    assert(map->keys, "couldn't calloc map keys");                             \
                                                                                \
     map->values = calloc(map->cap, sizeof(type));                              \
-    if (!map->values) {                                                        \
-      return ERROR_CALLOC;                                                     \
-    }                                                                          \
-                                                                               \
-    return nil;                                                                \
+    assert(map->values, "couldn't calloc map values");                         \
   }                                                                            \
                                                                                \
-  error typename##_deinit(typename *map) {                                     \
-    if (!map) {                                                                \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*map)) {                                    \
-      return nil;                                                              \
-    }                                                                          \
+  void typename##_deinit(typename *map) {                                      \
+    assert(map, "map is nil");                                                 \
+    assert(typename##_is_initialized(*map), "map is not initialized");         \
                                                                                \
     free(map->keys);                                                           \
     map->keys = nil;                                                           \
@@ -72,29 +56,21 @@ typedef char emap_key[EMAP_KEY_SIZE];
                                                                                \
     map->len = 0;                                                              \
     map->cap = 0;                                                              \
-                                                                               \
-    return nil;                                                                \
   }                                                                            \
                                                                                \
-  error typename##_append(typename *map, emap_key key, type value) {           \
-    if (!map) {                                                                \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*map)) {                                    \
-      return ERROR_NOT_INITIALIZED;                                            \
-    }                                                                          \
+  void typename##_append(typename *map, emap_key key, type value) {            \
+    assert(map, "map is nil");                                                 \
+    assert(typename##_is_initialized(*map), "map is not initialized");         \
                                                                                \
     if (map->len == map->cap) {                                                \
       map->cap *= 2;                                                           \
-      if (!realloc(map->keys, sizeof(emap_key) * (map->cap))) {                \
-        return ERROR_REALLOC;                                                  \
-      }                                                                        \
+                                                                               \
+      void *ok_keys = realloc(map->keys, sizeof(emap_key) * (map->cap));       \
+      assert(ok_keys, "couldn't realloc map keys");                            \
       memset(&map->keys[map->len], nil, map->cap - map->len);                  \
                                                                                \
-      if (!realloc(map->values, sizeof(type) * (map->cap))) {                  \
-        return ERROR_REALLOC;                                                  \
-      }                                                                        \
+      void *ok_values = realloc(map->values, sizeof(type) * (map->cap));       \
+      assert(ok_values, "couldn't realloc map values");                        \
       memset(&map->values[map->len], nil, map->cap - map->len);                \
     }                                                                          \
                                                                                \
@@ -102,44 +78,32 @@ typedef char emap_key[EMAP_KEY_SIZE];
     map->values[map->len] = value;                                             \
                                                                                \
     map->len++;                                                                \
-                                                                               \
-    return nil;                                                                \
   }                                                                            \
                                                                                \
-  error typename##_lookup(typename *map, emap_key key, type *value_out) {      \
-    if (!map) {                                                                \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*map)) {                                    \
-      return ERROR_NOT_INITIALIZED;                                            \
-    }                                                                          \
+  bool typename##_lookup(typename *map, emap_key key, type *value_out) {       \
+    assert(map, "map is nil");                                                 \
+    assert(typename##_is_initialized(*map), "map is not initialized");         \
                                                                                \
     for (isize i = 0; i < map->len; i++) {                                     \
       if (strncmp(map->keys[i], key, EMAP_KEY_SIZE) == 0) {                    \
         *value_out = map->values[i];                                           \
-        break;                                                                 \
+        return true;                                                           \
       }                                                                        \
     }                                                                          \
                                                                                \
-    return nil;                                                                \
+    return false;                                                              \
   }                                                                            \
                                                                                \
-  error typename##_delete(typename *map, emap_key key) {                       \
-    if (!map) {                                                                \
-      return ERROR_NIL_ARG;                                                    \
-    }                                                                          \
-                                                                               \
-    if (!typename##_is_initialized(*map)) {                                    \
-      return ERROR_NOT_INITIALIZED;                                            \
-    }                                                                          \
+  bool typename##_delete(typename *map, emap_key key) {                        \
+    assert(map, "map is nil");                                                 \
+    assert(typename##_is_initialized(*map), "map is not initialized");         \
                                                                                \
     bool found;                                                                \
     for (isize i = 0; i < map->len; i++) {                                     \
       if (!found) {                                                            \
-        if (strncmp(map->keys[i], key, EMAP_KEY_SIZE) == 0) {                  \
+        if (strncmp(map->keys[i], key, EMAP_KEY_SIZE) == 0)                    \
           found = true;                                                        \
-        } else                                                                 \
+        else                                                                   \
           continue;                                                            \
       }                                                                        \
                                                                                \
@@ -156,7 +120,7 @@ typedef char emap_key[EMAP_KEY_SIZE];
       map->len--;                                                              \
     }                                                                          \
                                                                                \
-    return nil;                                                                \
+    return found;                                                              \
   }
 
 DECL_EMAP(emap_check, int)
