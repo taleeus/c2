@@ -5,8 +5,3 @@
     FATAL(message);                                                            \
     exit(1);                                                                   \
   }
-
-#define check(condition, err)                                                  \
-  if (!condition) {                                                            \
-    return err;                                                                \
-  }

@@ -47,20 +47,12 @@ i32 test_run() {
     TEST_FAILED = true;                                                        \
   }
 
-#undef assert
-#define assert(condition, message)                                             \
+#define fatal(condition, message)                                              \
   if (!condition) {                                                            \
-    FATAL(message);                                                            \
+    ERROR(message);                                                            \
     TEST_FAILED = true;                                                        \
                                                                                \
-    exit(1);                                                                   \
-  }
-
-#undef check
-#define check(condition, err)                                                  \
-  if (!condition) {                                                            \
-    TEST_FAILED = true;                                                        \
-    return err;                                                                \
+    return;                                                                    \
   }
 
 #endif
